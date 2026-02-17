@@ -63,7 +63,16 @@ def build_model(tables):
 
     # Date columns
     fProduction["Date"] = fProduction["StartTime"]
-    fProduction["Month"] = fProduction["Date"].dt.to_period("M")
+    fProduction["Year"] = fProduction["Date"].dt.year
+    fProduction["MonthNumber"] = fProduction["Date"].dt.month
+    fProduction["MonthName"] = fProduction["Date"].dt.month_name(locale="en_US.utf8")
+
+    fProduction["MonthLabel"] = (
+            fProduction["MonthName"] + " " + fProduction["Year"].astype(str)
+    )
+    fProduction["MonthSort"] = (
+            fProduction["Year"] * 100 + fProduction["MonthNumber"]
+    )
 
     return fProduction
 
@@ -101,7 +110,15 @@ def calculate_oee(df):
 
     oee = availability * productivity * quality
 
-    return availability, productivity, quality, oee
+    return {
+        "availability": availability,
+        "productivity": productivity,
+        "quality": quality,
+        "oee": oee,
+        "qty_produced": qty_produced,
+        "qty_planned": qty_planned,
+        "qty_rejected": qty_rejected
+    }
 
 
 # ===============================
@@ -121,22 +138,29 @@ def render_kpi(label, value, threshold):
 
 
 def render_dashboard(df):
-
-    availability, productivity, quality, oee = calculate_oee(df)
+    metrics = calculate_oee(df)
 
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        render_kpi("Availability", availability, 0.90)
+        render_kpi("Availability", metrics["availability"], 0.90)
 
     with col2:
-        render_kpi("Productivity", productivity, 0.95)
+        render_kpi("Productivity", metrics["productivity"], 0.95)
 
     with col3:
-        render_kpi("Quality", quality, 0.99)
+        render_kpi("Quality", metrics["quality"], 0.99)
 
     with col4:
-        render_kpi("OEE", oee, 0.85)
+        render_kpi("OEE", metrics["oee"], 0.85)
+
+    st.divider()
+
+    col5, col6, col7 = st.columns(3)
+
+    col5.metric("Qty Produced", f"{metrics['qty_produced']:,.0f}")
+    col6.metric("Qty Planned", f"{metrics['qty_planned']:,.0f}")
+    col7.metric("Qty Rejected", f"{metrics['qty_rejected']:,.0f}")
 
     # Daily chart
     daily = df.groupby(df["Date"].dt.date).agg({
@@ -156,20 +180,27 @@ tables = load_data()
 fProduction = build_model(tables)
 
 # Sidebar Month Filter
-months = sorted(fProduction["Month"].unique())
+months = (
+    fProduction[["MonthLabel", "MonthSort"]]
+    .drop_duplicates()
+    .sort_values("MonthSort")
+)
+month_labels = months["MonthLabel"].tolist()
 
 select_all = st.sidebar.checkbox("Select All Months", value=True)
 
 if select_all:
-    selected_months = months
+    selected_months = month_labels
 else:
     selected_months = st.sidebar.multiselect(
         "Select Month(s)",
-        options=months,
-        default=months
+        options=month_labels,
+        default=month_labels
     )
 
-df_filtered = fProduction[fProduction["Month"].isin(selected_months)]
+df_filtered = fProduction[
+    fProduction["MonthLabel"].isin(selected_months)
+]
 
 st.subheader(f"Selected Months: {', '.join(map(str, selected_months))}")
 
