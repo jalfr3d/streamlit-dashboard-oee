@@ -2,11 +2,21 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="Dashboard",page_icon="📊",layout="wide")
 
 # ===============================
 # DATA LOADING
 # ===============================
+
+KPI_INFO = {
+    "Availability": "Availability = Productive Hours / (Productive Hours + Outage Hours)",
+    "Productivity": "Productivity = Qty Produced / Qty Planned",
+    "Quality": "Quality = Qty Produced / (Qty Produced + Qty Rejected)",
+    "OEE": "OEE = Availability × Productivity × Quality",
+    "Qty Produced": "Total sum of produced units",
+    "Qty Planned": "Sum of (ItemsPerHour × Hours) for productive records",
+    "Qty Rejected": "Total rejected units"
+}
 
 @st.cache_data
 def load_data():
@@ -125,19 +135,33 @@ def calculate_oee(df):
 # KPI RENDER
 # ===============================
 
-def render_kpi(label, value, threshold):
-    color = "green" if value >= threshold else "red"
-    arrow = "▲" if value >= threshold else "▼"
+def render_kpi(label, value, threshold=None, is_percentage=True):
+    help_text = KPI_INFO.get(label, "")
 
-    st.metric(
-        label,
-        f"{value:.2%}",
-        delta=f"{arrow} Target {threshold:.0%}",
-        delta_color=color
-    )
+    if threshold is not None:
+        color = "green" if value >= threshold else "red"
+        arrow = "▲" if value >= threshold else "▼"
+
+        st.metric(
+            label,
+            f"{value:.2%}" if is_percentage else f"{value:,.0f}",
+            delta=f"{arrow} Target {threshold:.0%}",
+            delta_color=color,
+            border=True,
+            help=help_text
+        )
+    else:
+        st.metric(
+            label,
+            f"{value:.2%}" if is_percentage else f"{value:,.0f}",
+            border=True,
+            help=help_text
+        )
 
 
 def render_dashboard(df):
+
+    st.header("KPI", anchor=False)
     metrics = calculate_oee(df)
 
     col1, col2, col3, col4 = st.columns(4)
@@ -154,13 +178,11 @@ def render_dashboard(df):
     with col4:
         render_kpi("OEE", metrics["oee"], 0.85)
 
-    st.divider()
-
     col5, col6, col7 = st.columns(3)
 
-    col5.metric("Qty Produced", f"{metrics['qty_produced']:,.0f}")
-    col6.metric("Qty Planned", f"{metrics['qty_planned']:,.0f}")
-    col7.metric("Qty Rejected", f"{metrics['qty_rejected']:,.0f}")
+    col5.metric("Qty Produced", f"{metrics['qty_produced']:,.0f}", border=True)
+    col6.metric("Qty Planned", f"{metrics['qty_planned']:,.0f}", border=True)
+    col7.metric("Qty Rejected", f"{metrics['qty_rejected']:,.0f}", border=True)
 
     # Daily chart
     daily = df.groupby(df["Date"].dt.date).agg({
@@ -168,7 +190,10 @@ def render_dashboard(df):
         "QtyProduced": "sum"
     }).reset_index()
 
-    fig = px.line(daily, x="Date", y="QtyProduced")
+    st.divider()
+
+    st.subheader("Production by Day", anchor=False)
+    fig = px.line(daily, x="Date", y="QtyProduced", markers=True)
     st.plotly_chart(fig, width="stretch")
 
 
@@ -202,6 +227,6 @@ df_filtered = fProduction[
     fProduction["MonthLabel"].isin(selected_months)
 ]
 
-st.subheader(f"Selected Months: {', '.join(map(str, selected_months))}")
-
+#st.subheader(f"Selected Months: {', '.join(map(str, selected_months))}", anchor=False)
+st.title("DASHBOARD", anchor=False)
 render_dashboard(df_filtered)
