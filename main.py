@@ -230,3 +230,7 @@ df_filtered = fProduction[
 #st.subheader(f"Selected Months: {', '.join(map(str, selected_months))}", anchor=False)
 st.title("DASHBOARD", anchor=False)
 render_dashboard(df_filtered)
+st.divider()
+col1, col2 = st.columns([0.9,0.1])
+with col2:
+    st.write("2025 [**jalfr3d**](https://github.com/jalfr3d)")
