@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.set_page_config(page_title="Dashboard",page_icon="📊",layout="wide")
+
+st.set_page_config(page_title="📈 Dashboard OEE",layout="wide")
 
 # ===============================
 # DATA LOADING
@@ -84,6 +85,14 @@ def build_model(tables):
             fProduction["Year"] * 100 + fProduction["MonthNumber"]
     )
 
+    dMachine = tables["dMachine"]
+
+    # Merge Machine Name
+    fProduction = fProduction.merge(
+        dMachine[["MachineID", "Machine"]],
+        on="MachineID",
+        how="left"
+    )
     return fProduction
 
 
@@ -131,6 +140,49 @@ def calculate_oee(df):
     }
 
 
+def calculate_oee_over_time(df):
+
+    monthly = []
+
+    grouped = df.groupby(["MonthLabel", "MonthSort"])
+
+    for (label, sort), group in grouped:
+        metrics = calculate_oee(group)
+
+        monthly.append({
+            "MonthLabel": label,
+            "MonthSort": sort,
+            "OEE": metrics["oee"]
+        })
+
+    monthly_df = pd.DataFrame(monthly)
+    monthly_df = monthly_df.sort_values("MonthSort")
+
+    return monthly_df
+
+
+def calculate_oee_by_machine(df):
+
+    machine_list = []
+
+    grouped = df.groupby(["MachineID", "Machine"])
+
+    for (machine_id, machine_name), group in grouped:
+        metrics = calculate_oee(group)
+
+        machine_list.append({
+            "MachineID": machine_id,
+            "Machine": machine_name,
+            "OEE": metrics["oee"]
+        })
+
+    machine_df = pd.DataFrame(machine_list)
+    machine_df = machine_df.sort_values("OEE", ascending=True)
+
+    return machine_df
+
+
+
 # ===============================
 # KPI RENDER
 # ===============================
@@ -159,9 +211,80 @@ def render_kpi(label, value, threshold=None, is_percentage=True):
         )
 
 
+def render_oee_over_time(df):
+
+    monthly_df = calculate_oee_over_time(df)
+
+    fig = px.line(
+        monthly_df,
+        x="MonthLabel",
+        y="OEE",
+        markers=True
+    )
+
+    fig.update_layout(
+        yaxis_tickformat=".0%",
+        xaxis_title="Month",
+        yaxis_title="OEE",
+        title="OEE Over Time"
+    )
+
+    fig.update_traces(text=monthly_df["OEE"].map(lambda x: f"{x:.1%}"),
+                      textposition="top center")
+
+    st.plotly_chart(fig, width="stretch")
+
+
+def render_oee_by_machine(df):
+
+    machine_df = calculate_oee_by_machine(df)
+    machine_df["DisplayName"] = (
+            machine_df["Machine"] + " (" + machine_df["MachineID"].astype(str) + ")"
+    )
+
+    fig = px.bar(
+        machine_df,
+        x="OEE",
+        y="DisplayName",
+        orientation="h"
+    )
+
+    fig.update_layout(
+        xaxis_tickformat=".0%",
+        height=500,
+        title="OEE by Machine",
+        dragmode="pan",
+        yaxis=dict(
+            range=[-0.5, 9.5]
+        )
+    )
+
+    fig.update_xaxes(
+        range=[0, 1],
+        tickformat=".0%"
+    )
+
+    fig.add_vline(
+        x=OEE_TARGET,
+        line_dash="dash",
+        line_color="black",
+        annotation_text="Target 85%",
+        annotation_position="top"
+    )
+
+    fig.update_traces(
+        text=machine_df["OEE"].map(lambda x: f"{x:.1%}"),
+        textposition="outside"
+    )
+
+    st.plotly_chart(fig,
+                    width="stretch",
+                    config={"scrollZoom": True})
+
+
 def render_dashboard(df):
 
-    st.header("KPI", anchor=False)
+    st.header("KPIs", anchor=False)
     metrics = calculate_oee(df)
 
     col1, col2, col3, col4 = st.columns(4)
@@ -184,27 +307,20 @@ def render_dashboard(df):
     col6.metric("Qty Planned", f"{metrics['qty_planned']:,.0f}", border=True)
     col7.metric("Qty Rejected", f"{metrics['qty_rejected']:,.0f}", border=True)
 
-    # Daily chart
-    daily = df.groupby(df["Date"].dt.date).agg({
-        "Hours": "sum",
-        "QtyProduced": "sum"
-    }).reset_index()
-
-    st.divider()
-
-    st.subheader("Production by Day", anchor=False)
-    fig = px.line(daily, x="Date", y="QtyProduced", markers=True)
-    st.plotly_chart(fig, width="stretch")
-
-
+    col8, col9 = st.columns(2)
+    with col8:
+        render_oee_over_time(df)
+    with col9:
+        render_oee_by_machine(df)
 # ===============================
 # MAIN APP
 # ===============================
-
+st.title("Production Analytical Dashboard", anchor=False)
+OEE_TARGET = 0.85
 tables = load_data()
 fProduction = build_model(tables)
 
-# Sidebar Month Filter
+# Month Filter
 months = (
     fProduction[["MonthLabel", "MonthSort"]]
     .drop_duplicates()
@@ -212,12 +328,12 @@ months = (
 )
 month_labels = months["MonthLabel"].tolist()
 
-select_all = st.sidebar.checkbox("Select All Months", value=True)
+select_all = st.checkbox("Select All Months", value=True)
 
 if select_all:
     selected_months = month_labels
 else:
-    selected_months = st.sidebar.multiselect(
+    selected_months = st.multiselect(
         "Select Month(s)",
         options=month_labels,
         default=month_labels
@@ -227,8 +343,6 @@ df_filtered = fProduction[
     fProduction["MonthLabel"].isin(selected_months)
 ]
 
-#st.subheader(f"Selected Months: {', '.join(map(str, selected_months))}", anchor=False)
-st.title("DASHBOARD", anchor=False)
 render_dashboard(df_filtered)
 st.divider()
 col1, col2 = st.columns([0.9,0.1])
