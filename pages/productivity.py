@@ -20,8 +20,6 @@ def render_prod(df):
 # ===============================
 st.title("Productivity", anchor=False)
 
-st.divider()
-
 df = load_data()
 fProduction = build_model(df)
 # Month Filter

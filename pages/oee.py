@@ -87,7 +87,7 @@ def build_model(tables):
 
     dMachine = tables["dMachine"]
     dIncident = tables["dIncident"]
-
+    dOperator = tables["dOperator"]
     # Merge Machine Name
     fProduction = fProduction.merge(
         dMachine[["MachineID", "Machine"]],
@@ -98,6 +98,12 @@ def build_model(tables):
     fProduction = fProduction.merge(
         dIncident[["IncidentID","Incident"]],
         on="IncidentID",
+        how="left"
+    )
+
+    fProduction = fProduction.merge(
+        dOperator[["OperatorID","Operator"]],
+        on="OperatorID",
         how="left"
     )
     return fProduction

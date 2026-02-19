@@ -47,15 +47,43 @@ def render_hours_by_incident(df):
         texttemplate="%{x:.1f}",
         textposition="outside"
     )
-    fig.update_xaxes(tickformat=".1f")
+
     fig.update_layout(
         title="Outage Hours by Incident"
     )
 
-
-
     st.plotly_chart(fig, width='stretch')
 
+def render_hours_by_operator(df):
+
+    df_operators = df[
+        (df["OperatorID"].notna()) &
+        (df["IncidentID"].isna())
+        ]
+
+    operator_hours = (
+        df_operators
+        .groupby("Operator", as_index=False)["Hours"]
+        .sum()
+        .sort_values("Hours", ascending=True)
+    )
+
+    fig = px.bar(
+        operator_hours,
+        x="Hours",
+        y="Operator",
+        orientation="h",
+    )
+    fig.update_traces(
+        texttemplate="%{x:.1f}",
+        textposition="outside"
+    )
+
+    fig.update_layout(
+        title="Productive Hours by Operator"
+    )
+
+    st.plotly_chart(fig, width='stretch')
 
 def render_availa(df):
     monthly_df = calculate_availa_over_time(df)
@@ -90,7 +118,7 @@ def render_dash(df):
     col5, col6, col7 = st.columns(3)
 
     with col5:
-        pass
+        render_hours_by_operator(df)
     with col6:
         render_availa(df)
     with col7:
@@ -98,9 +126,7 @@ def render_dash(df):
 # ===============================
 # MAIN APP
 # ===============================
-st.title("Hours", anchor=False)
-
-st.divider()
+st.title("Hours Analysis", anchor=False)
 
 df = load_data()
 fProduction = build_model(df)
