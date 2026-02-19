@@ -92,6 +92,7 @@ def render_availa(df):
         monthly_df,
         x="MonthLabel",
         y="Availability",
+        text="Availability",
         markers=True
     )
 
@@ -103,7 +104,7 @@ def render_availa(df):
     )
 
     fig.update_traces(text=monthly_df["Availability"].map(lambda x: f"{x:.1%}"),
-                      textposition="top center")
+                      textposition="top center", texttemplate="%{text}")
 
     st.plotly_chart(fig, width="stretch")
 

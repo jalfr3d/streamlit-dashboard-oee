@@ -234,6 +234,7 @@ def render_oee_over_time(df):
         monthly_df,
         x="MonthLabel",
         y="OEE",
+        text="OEE",
         markers=True
     )
 
@@ -245,7 +246,7 @@ def render_oee_over_time(df):
     )
 
     fig.update_traces(text=monthly_df["OEE"].map(lambda x: f"{x:.1%}"),
-                      textposition="top center")
+                      textposition="top center", texttemplate="%{text}")
 
     st.plotly_chart(fig, width="stretch")
 
@@ -299,13 +300,10 @@ def render_dashboard(df):
 
     with col1:
         render_kpi("Availability", metrics["availability"], 0.90)
-
     with col2:
         render_kpi("Productivity", metrics["productivity"], 0.95)
-
     with col3:
         render_kpi("Quality", metrics["quality"], 0.99)
-
     with col4:
         render_kpi("OEE", metrics["oee"], 0.85)
 
@@ -320,6 +318,7 @@ def render_dashboard(df):
         render_oee_over_time(df)
     with col9:
         render_oee_by_machine(df)
+
 # ===============================
 # MAIN APP
 # ===============================
