@@ -32,7 +32,7 @@ months = (
 )
 month_labels = months["MonthLabel"].tolist()
 
-select_all_p = st.checkbox("Select All Months", value=True, key="productivity")
+select_all_p = st.checkbox("Select All Months", value=True, key="prod_page")
 
 if select_all_p:
     selected_months = month_labels

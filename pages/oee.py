@@ -86,11 +86,18 @@ def build_model(tables):
     )
 
     dMachine = tables["dMachine"]
+    dIncident = tables["dIncident"]
 
     # Merge Machine Name
     fProduction = fProduction.merge(
         dMachine[["MachineID", "Machine"]],
         on="MachineID",
+        how="left"
+    )
+
+    fProduction = fProduction.merge(
+        dIncident[["IncidentID","Incident"]],
+        on="IncidentID",
         how="left"
     )
     return fProduction
@@ -136,7 +143,9 @@ def calculate_oee(df):
         "oee": oee,
         "qty_produced": qty_produced,
         "qty_planned": qty_planned,
-        "qty_rejected": qty_rejected
+        "qty_rejected": qty_rejected,
+        "total_hours": productive_hours,
+        "outage_hours": outage_hours,
     }
 
 
@@ -251,17 +260,11 @@ def render_oee_by_machine(df):
 
     fig.update_layout(
         xaxis_tickformat=".0%",
-        height=500,
         title="OEE by Machine",
-        dragmode="pan",
-        yaxis=dict(
-            range=[-0.5, 9.5]
+        dragmode='pan',
+        xaxis=dict(
+            range=[0, 1]  # Show only the first 10 values initially
         )
-    )
-
-    fig.update_xaxes(
-        range=[0, 1],
-        tickformat=".0%"
     )
 
     fig.add_vline(
@@ -278,8 +281,7 @@ def render_oee_by_machine(df):
     )
 
     st.plotly_chart(fig,
-                    width="stretch",
-                    config={"scrollZoom": True})
+                    width="stretch")
 
 
 def render_dashboard(df):
@@ -328,7 +330,7 @@ months = (
 )
 month_labels = months["MonthLabel"].tolist()
 
-select_all = st.checkbox("Select All Months", value=True)
+select_all = st.checkbox("Select All Months", value=True, key="oee_page")
 
 if select_all:
     selected_months = month_labels
