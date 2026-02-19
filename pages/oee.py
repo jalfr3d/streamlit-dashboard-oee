@@ -262,9 +262,15 @@ def render_oee_by_machine(df):
         machine_df,
         x="OEE",
         y="DisplayName",
-        orientation="h"
+        orientation="h",
+        color="OEE",
+        color_continuous_scale = ["red", "yellow", "green"]
     )
+    fig.update_xaxes(tickformat=".0%")
 
+    fig.update_coloraxes(
+        colorbar_tickformat=".0%"
+    )
     fig.update_layout(
         xaxis_tickformat=".0%",
         title="OEE by Machine",
