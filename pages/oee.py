@@ -277,7 +277,7 @@ def render_oee_by_machine(df):
     fig.add_vline(
         x=OEE_TARGET,
         line_dash="dash",
-        line_color="black",
+        line_color="green",
         annotation_text="Target 85%",
         annotation_position="top"
     )

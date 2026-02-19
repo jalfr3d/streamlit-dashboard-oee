@@ -1,7 +1,7 @@
 import streamlit as st
 
 st.set_page_config(layout="wide")
-st.logo("images/logo.png", size="large")
+st.sidebar.image("images/logo.jpg")
 pages = {
     "Dashboard": [
         st.Page("pages/oee.py", title="📈 OEE"),
@@ -9,7 +9,7 @@ pages = {
         st.Page("pages/productivity.py", title="📊 Productivity")
     ],
     "\u200b": [
-        st.Page("pages/account.py", title="🙋‍♂️ Account Settings"),
+        st.Page("pages/account.py", title="⚙️ Settings"),
         st.Page("pages/contact.py", title="✉️ Contact"),
     ],
 }
