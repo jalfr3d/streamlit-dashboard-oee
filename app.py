@@ -10,7 +10,6 @@ if "authenticated" not in st.session_state:
 # ---------------- LOGIN SCREEN ----------------
 
 if not st.session_state.authenticated:
-    st.title("Login", anchor=False)
 
     st.markdown(
         """
@@ -21,16 +20,30 @@ if not st.session_state.authenticated:
         unsafe_allow_html=True,
     )
 
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
+    # Center the login box
+    col1, col2, col3 = st.columns([1, 2, 1])
 
-    if st.button("Login"):
-        if login(username, password):
-            st.success("Login successful")
-            st.rerun()
-        else:
-            st.error("Invalid credentials")
+    with col2:
+        st.markdown("""
+        <style>
+        /* Targets the span containing the instruction text and hides it */
+        div[data-testid="InputInstructions"] > span:nth-child(1) {
+            visibility: hidden;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
+        with st.form("login_form"):
+            st.subheader("Login", anchor=False)
+            username = st.text_input("Username")
+            password = st.text_input("Password", type="password")
+            submitted = st.form_submit_button("Login")
+
+            if submitted:
+                if login(username, password):
+                    st.rerun()
+                else:
+                    st.error("Invalid credentials")
     st.stop()
 
 

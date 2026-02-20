@@ -1,0 +1,18 @@
+{
+  "admin1": {
+    "password": "$2b$12$je5rI6vc71.sYZFb3C2v2uxBfXs2EnLWOX81lHb7ZQ9rEWdCwT7FK",
+    "role": "admin"
+  },
+  "manager1": {
+    "password": "$2b$12$qE8eeuNcMNLt54CdTmFwMO95OYl2SDqcs9rOJepnBC9M1LnDOO6p6",
+    "role": "manager"
+  },
+  "analyst1": {
+    "password": "$2b$12$7NSLN5nEr8H6Z0PI2K9NQuwkxh2vM63E5KtrjXAFkD9VHPnnR3u.a",
+    "role": "analyst"
+  },
+  "viewer1": {
+    "password": "$2b$12$LoPMppsvskrBi4vVBy89Q.IZOmX2oQwxvjouASwvU4T0BaiILjn.S",
+    "role": "viewer"
+  }
+}
