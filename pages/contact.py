@@ -12,6 +12,8 @@ from captcha.image import ImageCaptcha
 from io import BytesIO
 from PIL import Image
 from streamlit_js_eval import streamlit_js_eval
+from utils.auth import require_role
+require_role(["admin", "manager", "analyst", "viewer"])
 
 ## Page configuration options
 st.set_page_config(page_title="✉️ Contact",layout="wide")  # column widths set below are dependent on the layout being set to wide

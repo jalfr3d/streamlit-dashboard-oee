@@ -1,7 +1,9 @@
 import streamlit as st
-from pages.oee import load_data, build_model, calculate_oee
+from utils.data_loader import load_data, build_model, calculate_oee
 import plotly.express as px
 import pandas as pd
+from utils.auth import require_role
+require_role(["admin", "manager", "viewer"])
 
 st.set_page_config(page_title="⏳ Hours",layout="wide")
 
