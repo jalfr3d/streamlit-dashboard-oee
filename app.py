@@ -70,7 +70,7 @@ if role in ["admin", "manager"]:
         ],
         " ": [
             st.Page("pages/account.py", title="⚙ Settings"),
-            st.Page("pages/contact.py", title="✉️ Contact"),
+            st.Page("pages/contact.py", title="✉️ Send Email"),
         ],
     }
 
@@ -81,7 +81,7 @@ elif role == "analyst":
         ],
         " ": [
             st.Page("pages/account.py", title="⚙ Settings"),
-            st.Page("pages/contact.py", title="✉️ Contact"),
+            st.Page("pages/contact.py", title="✉️ Send Email"),
         ],
     }
 
@@ -92,7 +92,7 @@ elif role == "viewer":
         ],
         " ": [
             st.Page("pages/account.py", title="⚙ Settings"),
-            st.Page("pages/contact.py", title="✉️ Contact"),
+            st.Page("pages/contact.py", title="✉️ Send Email"),
         ],
     }
 
