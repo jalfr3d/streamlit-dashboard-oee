@@ -1,16 +1,17 @@
 import pandas as pd
 import streamlit as st
-
+import os
 
 @st.cache_data
 def load_data():
-    file = "DatabaseProduction.xlsx"
-    xls = pd.ExcelFile(file)
+    base_path = os.path.dirname(__file__)
+    excel_path = os.path.join(base_path, '..', 'data', 'DBProduction.xlsx')
+    xls = pd.ExcelFile(excel_path)
 
     tables = {}
     for sheet in xls.sheet_names:
         if sheet.startswith(("d", "f")):
-            tables[sheet] = pd.read_excel(file, sheet_name=sheet)
+            tables[sheet] = pd.read_excel(excel_path, sheet_name=sheet)
 
     return tables
 
