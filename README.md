@@ -49,9 +49,9 @@ A multi-page **Streamlit dashboard** designed for monitoring operational perform
 
 ---
 
-### 📬 Contact Page
+### 📬 Send Email
 
-* Built-in **contact form**
+* Built-in **distribution form** *(currently in work)*
 * Includes **CAPTCHA verification**
 * Configurable to send messages using your own **Gmail account**
 
