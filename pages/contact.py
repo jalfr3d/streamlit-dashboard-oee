@@ -16,7 +16,7 @@ from utils.auth import require_role
 require_role(["admin", "manager", "analyst", "viewer"])
 
 ## Page configuration options
-st.set_page_config(page_title="✉️ Contact",layout="wide")  # column widths set below are dependent on the layout being set to wide
+st.set_page_config(page_title="✉️ Send Email",layout="wide")  # column widths set below are dependent on the layout being set to wide
 
 ## Load secrets.toml variables
 options = st.secrets["OPTIONS"]
@@ -24,7 +24,7 @@ server = st.secrets["SERVER"]
 port = st.secrets["PORT"]
 sender = os.getenv("SENDER")
 secret = os.getenv("PY_NEWS")
-recipient = os.getenv("RECIPIENT")
+# recipient = os.getenv("RECIPIENT")
 
 
 ## Functions
@@ -42,7 +42,7 @@ if 'captcha_text' not in st.session_state:
 captcha_text, captcha_image = st.session_state.captcha_text
 
 ## Contact Form
-st.header("✉️ Contact Form", anchor=False)
+st.header("✉️ Internal Contact", anchor=False)
 
 col1, col2, col3, col4 = st.columns(
     [3, 0.25, 1, 0.25])  # column widths for a balanced distribution of elements in the page
@@ -67,8 +67,11 @@ with col3:  # right side of the layout
 
 ## Contact form
 with col1:  # left side of the layout
-    email = st.text_input("**Your email***", value=st.session_state.get('email', ''),
+    email = st.text_input("**Destination email***", value=st.session_state.get('email', ''),
                           key='email')  # input widget for contact email
+    emails = st.selectbox(
+        'Select an User contact:',
+        ('admin@company.com', 'manager@company.com', 'analyst@company.com'))
     message = st.text_area("**Your message***", value=st.session_state.get('message', ''),
                            key='message')  # input widget for message
 
@@ -90,7 +93,7 @@ with col1:  # left side of the layout
                     smtp_port = port
                     smtp_username = sender
                     smtp_password = secret
-                    recipient_email = recipient
+                    recipient_email = email
 
                     # Create an SMTP connection
                     server = smtplib.SMTP(smtp_server, smtp_port)
@@ -112,11 +115,11 @@ with col1:  # left side of the layout
                     # Send the confirmation email to the message sender # If you do not want to send a confirmation email leave this section commented
                     current_datetime = datetime.datetime.now()
                     formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
-                    confirmation_subject = f"Confirmation of Contact Form Submission ({formatted_datetime})"
-                    confirmation_body = f"Thank you for contacting us! Your message has been received.\n\nYour message: {message}"
+                    confirmation_subject = f"Confirmation of Internal Contact Submission ({formatted_datetime})"
+                    confirmation_body = f"Your message has been received.\n\nYour message: {message}"
                     confirmation_msg = MIMEMultipart()
                     confirmation_msg['From'] = smtp_username
-                    confirmation_msg['To'] = email  # Use the sender's email address here
+                    confirmation_msg['To'] = email  # Use the recipient email address here
                     confirmation_msg['Subject'] = confirmation_subject
                     confirmation_msg.attach(MIMEText(confirmation_body, 'plain'))
                     server.sendmail(smtp_username, email, confirmation_msg.as_string())
