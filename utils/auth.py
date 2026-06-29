@@ -2,8 +2,12 @@ import streamlit as st
 import json
 import bcrypt
 from pathlib import Path
+import os
 
-USERS_FILE = Path("users.json")
+base_path = os.path.dirname(__file__)
+users_path = os.path.join(base_path, '..', 'data', 'users.json')
+
+USERS_FILE = Path(users_path)
 
 
 def load_users():
