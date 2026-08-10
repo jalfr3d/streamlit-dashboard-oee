@@ -2,7 +2,7 @@
 
 A multi-page **Streamlit dashboard** designed for monitoring operational performance through key industrial metrics such as **OEE (Overall Equipment Effectiveness)**, productivity, and working hours. The application includes authentication, role-based access, and interactive analytics powered by an Excel data source.
 
-<img width="1921" height="951" alt="dashboard" src="https://github.com/user-attachments/assets/8845aad5-0983-40d3-852b-470a40ebe9bb" />
+<img width="1921" height="951" alt="dashboard" src="images/dashboard.png" />
 
 ---
 
@@ -59,8 +59,9 @@ A multi-page **Streamlit dashboard** designed for monitoring operational perform
 
 ### 📂 Data Source
 
-* Uses an **Excel file** as the database
-* Easy to update and maintain without needing a full database system
+* Uses a **PostgreSQL database** hosted on [Neon](https://neon.tech), a serverless Postgres platform
+* Data is loaded via SQLAlchemy, with credentials managed through environment variables (`.env`) for security
+* Originally prototyped with dummy data in Excel; migrated to a real cloud database to support scalability and multi-user access
 
 ---
 
