@@ -71,8 +71,8 @@ A multi-page **Streamlit dashboard** designed for monitoring operational perform
 * **Streamlit**
 * **Pandas**
 * **Plotly / Matplotlib** (depending on implementation)
-* **OpenPyXL** (Excel handling)
-
+* ~~**OpenPyXL** (Excel handling)~~
+* **SQLAlchemy**
 ---
 
 ## 📦 Installation
@@ -128,9 +128,9 @@ recipient = os.getenv("RECIPIENT_EMAIL")
 
 ### 📊 Excel Data
 
-~~* Place your Excel file in the project directory~~
-~~* Ensure it follows the expected schema (columns used by the dashboard)~~
-~~* Update file path in the code if needed~~
+  * ~~Place your Excel file in the project directory~~
+  * ~~Ensure it follows the expected schema (columns used by the dashboard)~~
+  * ~~Update file path in the code if needed~~
   * The Excel DB is still in the repo but the dashboard its running from PostgreSQL DataBase
   * The Database its using the same information from the Excel
 ---
@@ -184,7 +184,7 @@ users = {
 ## 🧩 Notes
 
 * The app is designed to be **modular and extensible**
-~~* Excel-based backend makes it easy to prototype and deploy quickly~~
+* ~~Excel-based backend makes it easy to prototype and deploy quickly~~
 * Suitable for **internal dashboards** or lightweight analytics tools
 
 ---
