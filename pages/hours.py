@@ -141,16 +141,23 @@ months = (
 )
 month_labels = months["MonthLabel"].tolist()
 
-select_all_h = st.checkbox("Select All Months", value=True, key="hours_page")
+options = ["Select All"] + month_labels
 
-if select_all_h:
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    selected = st.multiselect(
+        "Select Month(s)",
+        options=options,
+        key="hours_page"
+    )
+if "Select All" in selected and len(selected) > 1:
+    selected = [m for m in selected if m != "Select All"]
+    selected_months = selected
+elif "Select All" in selected or not selected:
     selected_months = month_labels
 else:
-    selected_months = st.multiselect(
-        "Select Month(s)",
-        options=month_labels,
-        default=month_labels
-    )
+    selected_months = selected
 
 df_filtered = fProduction[
     fProduction["MonthLabel"].isin(selected_months)

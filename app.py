@@ -49,7 +49,7 @@ if not st.session_state.authenticated:
 
 # ---------------- AUTHENTICATED AREA ----------------
 
-st.sidebar.image("images/logo.jpg", caption="Company Name")
+st.logo("images/logo.png")
 st.sidebar.write(f"Logged in as: {st.session_state.username}")
 st.sidebar.write(f"Role: {st.session_state.role}")
 

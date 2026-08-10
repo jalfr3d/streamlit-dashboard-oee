@@ -1,17 +1,25 @@
+import os
 import pandas as pd
 import streamlit as st
-import os
+from sqlalchemy import create_engine, inspect
+from dotenv import load_dotenv
+
+load_dotenv()
+
+@st.cache_resource
+def get_engine():
+    return create_engine(os.environ["DATABASE_URL"])
 
 @st.cache_data
 def load_data():
-    base_path = os.path.dirname(__file__)
-    excel_path = os.path.join(base_path, '..', 'data', 'DBProduction.xlsx')
-    xls = pd.ExcelFile(excel_path)
+    engine = get_engine()
+    inspector = inspect(engine)
+    table_names = inspector.get_table_names()
 
     tables = {}
-    for sheet in xls.sheet_names:
-        if sheet.startswith(("d", "f")):
-            tables[sheet] = pd.read_excel(excel_path, sheet_name=sheet)
+    for table in table_names:
+        if table.startswith(("d", "f")):
+            tables[table] = pd.read_sql_table(table, engine)
 
     return tables
 
