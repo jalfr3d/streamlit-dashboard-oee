@@ -128,10 +128,11 @@ recipient = os.getenv("RECIPIENT_EMAIL")
 
 ### 📊 Excel Data
 
-* Place your Excel file in the project directory
-* Ensure it follows the expected schema (columns used by the dashboard)
-* Update file path in the code if needed
-
+~~* Place your Excel file in the project directory~~
+~~* Ensure it follows the expected schema (columns used by the dashboard)~~
+~~* Update file path in the code if needed~~
+  * The Excel DB is still in the repo but the dashboard its running from PostgreSQL DataBase
+  * The Database its using the same information from the Excel
 ---
 
 ## 🔐 Roles Configuration
@@ -156,11 +157,12 @@ users = {
 ## 📁 Project Structure 
 
 ```
-├── app.py
-├── DataBaseProduction.xlsx
-├── users.json
+├── data/
+│   ├── DataBaseProduction.xlsx
+│   ├── users.json
 ├── images/
-|   └── logo.jpg
+│   ├── dashboard.png
+│   └── logo.png
 ├── pages/
 │   ├── account.py
 │   ├── contact.py
@@ -168,8 +170,11 @@ users = {
 |   ├── oee.py
 │   └── productivity.py
 ├── utils/
-│   ├── auth.py│   
+│   ├── __init__.py
+│   ├── auth.py   
 │   └── data_loader.py
+├── .env.example
+├── app.py
 ├── requirements.txt
 └── README.md
 ```
@@ -179,14 +184,14 @@ users = {
 ## 🧩 Notes
 
 * The app is designed to be **modular and extensible**
-* Excel-based backend makes it easy to prototype and deploy quickly
+~~* Excel-based backend makes it easy to prototype and deploy quickly~~
 * Suitable for **internal dashboards** or lightweight analytics tools
 
 ---
 
 ## 📌 Future Improvements
 
-* Replace Excel with SQL database
+* Replace Excel with SQL database (Completed)
 * Add user registration system
 * Improve role granularity
 * Deploy to cloud (Streamlit Cloud / AWS / Azure)

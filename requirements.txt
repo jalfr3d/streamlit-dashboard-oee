@@ -13,6 +13,7 @@ email-validator==2.3.0
 et_xmlfile==2.0.0
 gitdb==4.0.12
 GitPython==3.1.46
+greenlet==3.5.5
 idna==3.11
 Jinja2==3.1.6
 jsonschema==4.26.0
@@ -26,15 +27,18 @@ pandas==2.3.3
 pillow==12.1.1
 plotly==6.5.2
 protobuf==6.33.5
+psycopg2-binary==2.9.12
 pyarrow==23.0.1
 pydeck==0.9.1
 python-dateutil==2.9.0.post0
+python-dotenv==1.2.2
 pytz==2025.2
 referencing==0.37.0
 requests==2.32.5
 rpds-py==0.30.0
 six==1.17.0
 smmap==5.0.2
+SQLAlchemy==2.0.51
 streamlit==1.54.0
 streamlit-js-eval==1.0.0
 streamlit-plotly-events==0.0.6
